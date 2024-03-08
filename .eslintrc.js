@@ -1,4 +1,10 @@
-module.exports = {
+export default {
   root: true,
-  extends: '@react-native',
+  plugins: [
+    "react",
+  ],
+  extends: [
+    "eslint:recommended",
+    "plugin:react/recommended"
+  ]
 };
