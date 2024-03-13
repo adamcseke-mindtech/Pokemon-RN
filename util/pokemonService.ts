@@ -1,5 +1,6 @@
 import { Pokemon } from '../src/data/Pokemon';
 import { PokemonTypes } from '../src/data/PokemonType';
+import { PokemonDetails } from '../src/data/PokemonDetails';
 import axios from 'axios'
 
 let rootUrl = 'https://pokeapi.co/api/v2/'
@@ -37,4 +38,26 @@ export async function fetchPokemons(type: string): Promise<Pokemon[]> {
     });
 
     return pokemons;
+}
+
+export async function fetchPokemon(pokemonName: string): Promise<PokemonDetails> {
+    try {
+        const response = await axios.get(`${rootUrl}pokemon/${pokemonName}`);
+        const data = response.data;
+        const pokemonObj: PokemonDetails = {
+            id: data.id,
+            name: data.name,
+            weight: data.weight,
+            height: data.height,
+            abilities: data.abilities,
+            species: data.species,
+            sprites: data.sprites,
+            types: data.types,
+        };
+
+        return pokemonObj;
+    } catch (error) {
+        console.error("Failed to fetch pokemon:", error);
+        throw new Error("Failed to fetch pokemon details");
+    }
 }

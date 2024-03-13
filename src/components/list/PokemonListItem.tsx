@@ -1,9 +1,13 @@
 import { StyleSheet, Text, TouchableOpacity, ScrollView, View } from 'react-native';
 import { Pokemon } from '../../data/Pokemon';
 import { useDispatch, useSelector } from 'react-redux';
+import { useEffect, useState } from 'react';
 import { catchPokemon, releasePokemon } from '../../store/pokemonListSlice';
 import { RootState } from '../../store/store';
 import { Dimensions } from 'react-native';
+import { NavigationProp } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native'
+import { RootStackParamList } from '../../constants/RootStackParamList';
 
 interface ListItemProps {
     pokemon: Pokemon;
@@ -12,41 +16,59 @@ interface ListItemProps {
 const PokemonListItem = ({ pokemon }: ListItemProps) => {
     const entireState = useSelector((state: RootState) => state.pokemonList);
     const dispatch = useDispatch();
+    const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+    const [isCaught, setIsCaught] = useState(false);
+    const status = isCaught ? 'Caught' : '-';
 
-    const isCatched = entireState.catchedPokemons.some(p => p.id === pokemon.id);
-    const status = isCatched ? 'Caught' : '-';
+    useEffect(() => {
+        const caughtStatus = entireState.catchedPokemons.some(p => p.id === pokemon?.id);
+        setIsCaught(caughtStatus);
+        if (isCaught) {
+            console.log('List - Pokemon is caught: ' + caughtStatus + ', Name: ' + `${pokemon.name}` + ', id: ' + `${pokemon.id}` )
+        }
+    }, [entireState.catchedPokemons, pokemon]);
 
     function handleCatchRelease() {
-        if (isCatched) {
+        if (isCaught) {
             dispatch(releasePokemon(pokemon.id));
         } else {
             dispatch(catchPokemon(pokemon.id));
         }
     };
 
-    const content = (
-        <View style={styles.itemContainer}>
-            <View style={[
-                styles.textsContainer,
-                isCatched ? styles.textsContainerCatched : styles.textsContainerReleased
-            ]}>
-                <Text style={[styles.text, styles.textName]}>{pokemon.name}</Text>
-                <Text style={[styles.text, styles.textType]}>{pokemon.type}</Text>
-                <Text style={[styles.text, styles.textStatus]}>{status}</Text>
-            </View>
+    function SelectPokemonHandler() {
+        navigation.navigate('PokemonDetails', {
+            pokemonName: pokemon.name
+        })
+    }
 
-            <TouchableOpacity
-                style={[
-                    styles.button,
-                    isCatched ? styles.releaseButton : styles.catchButton,
-                ]}
-                onPress={handleCatchRelease}
-            >
-                <Text style={styles.buttonText}>
-                    {isCatched ? 'Release' : 'Catch'}
-                </Text>
-            </TouchableOpacity>
-        </View>
+    const content = (
+        <TouchableOpacity
+            onPress={SelectPokemonHandler}
+        >
+            <View style={styles.itemContainer}>
+                <View style={[
+                    styles.textsContainer,
+                    isCaught ? styles.textsContainerCatched : styles.textsContainerReleased
+                ]}>
+                    <Text style={[styles.text, styles.textName]}>{pokemon.name}</Text>
+                    <Text style={[styles.text, styles.textType]}>{pokemon.type}</Text>
+                    <Text style={[styles.text, styles.textStatus]}>{status}</Text>
+                </View>
+
+                <TouchableOpacity
+                    style={[
+                        styles.button,
+                        isCaught ? styles.releaseButton : styles.catchButton,
+                    ]}
+                    onPress={handleCatchRelease}
+                >
+                    <Text style={styles.buttonText}>
+                        {isCaught ? 'Release' : 'Catch'}
+                    </Text>
+                </TouchableOpacity>
+            </View>
+        </TouchableOpacity>
     );
 
     return content;

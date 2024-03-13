@@ -15,7 +15,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface PokemonListProps { }
 
-const PokemonList = ({ }: PokemonListProps) => {
+const PokemonListScreen = ({ }: PokemonListProps) => {
   const entireState = useSelector((state: RootState) => state.pokemonList);
   const [isFetching, setIsFetching] = useState(false);
   const [showOnlyCaught, setShowOnlyCaught] = useState(false);
@@ -57,7 +57,7 @@ const PokemonList = ({ }: PokemonListProps) => {
     : filteredPokemons;
 
   useEffect(() => {
-    const loadCaughtPokemons = async () => {
+    async function loadCaughtPokemons() {
       try {
         const jsonValue = await AsyncStorage.getItem('caughtPokemons');
         const caughtPokemons = jsonValue != null ? JSON.parse(jsonValue) : [];
@@ -124,7 +124,7 @@ const PokemonList = ({ }: PokemonListProps) => {
   return content;
 };
 
-export default PokemonList;
+export default PokemonListScreen;
 
 const styles = StyleSheet.create({
   rootContainer: {

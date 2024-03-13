@@ -9,6 +9,7 @@ export const Styles = {
         drawerBg: '#AC3636',
         lightBlue: '#2E6EB540',
         lightYellow: '#FFCB0540',
-        searchInput: '#EBEDED'
+        searchInput: '#EBEDED',
+        detailsTitleValue: '#676D74',
     }
 }
